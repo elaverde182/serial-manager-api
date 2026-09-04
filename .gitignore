@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Entorno / secretos
+.env
+*.local
+
+# SQLite (smoke tests / dev)
+*.db
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Pruebas / cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Artefactos
+*.log
+previews/
+
+# Node / newman (solo para testing del backend)
+node_modules/
+package-lock.json
+reports/
+
+# Frontend tiene su propio repo git
+frontend/
+entregables/
+
+# Imagenes generadas por probar.bat / preview_zpl.py
+preview/
+*.spec
+dist-tools/

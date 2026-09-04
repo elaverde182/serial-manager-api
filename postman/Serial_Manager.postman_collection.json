@@ -1,0 +1,668 @@
+{
+  "info": {
+    "name": "Serial Manager — Backend API",
+    "description": "Colección para testear el backend de Identificación y Trazabilidad de Equipos.\n\nUso rápido:\n1. Ejecuta **Auth > Login** (guarda el token automáticamente).\n2. Ejecuta **Catálogos > Crear laboratorio** (guarda lab_id).\n3. Ejecuta **Equipos > Generar serial** (guarda tag_id).\n4. El resto de requests ya usan esas variables.\n\nVariables de colección: base_url, access_token, refresh_token, tag_id, serial_code, lab_id, label_size_id, user_id.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "tag_id",
+      "value": ""
+    },
+    {
+      "key": "serial_code",
+      "value": ""
+    },
+    {
+      "key": "lab_id",
+      "value": ""
+    },
+    {
+      "key": "label_size_id",
+      "value": "1"
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Liveness /health",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        },
+        {
+          "name": "Readiness /health/db",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": "{{base_url}}/health/db"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (guarda token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('access_token', j.access_token);",
+                  "pm.environment.set('access_token', j.access_token);",
+                  "pm.collectionVariables.set('refresh_token', j.refresh_token);",
+                  "pm.environment.set('refresh_token', j.refresh_token);",
+                  "console.log('Token guardado. Rol:', j.user.role);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/login"
+          }
+        },
+        {
+          "name": "Refresh token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', j.access_token);",
+                  "pm.environment.set('access_token', j.access_token);",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/refresh"
+          }
+        },
+        {
+          "name": "Mi perfil /auth/me",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios y Roles (admin)",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/users"
+          }
+        },
+        {
+          "name": "Crear operador (guarda user_id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('user_id', pm.response.json().id); }",
+                  "if (pm.response.code === 201) { pm.environment.set('user_id', pm.response.json().id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"op{{$timestamp}}\",\n  \"password\": \"operador123\",\n  \"full_name\": \"Juan Perez\",\n  \"role_name\": \"operator\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/users"
+          }
+        },
+        {
+          "name": "Detalle usuario",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/users/{{user_id}}"
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Juan P. Actualizado\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/users/{{user_id}}"
+          }
+        },
+        {
+          "name": "Desactivar usuario",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/v1/users/{{user_id}}"
+          }
+        },
+        {
+          "name": "Listar roles",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/roles"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catálogos",
+      "item": [
+        {
+          "name": "Listar países",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/countries"
+          }
+        },
+        {
+          "name": "Crear país",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PE\",\n  \"name\": \"Peru\",\n  \"prefix\": \"PE\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/countries"
+          }
+        },
+        {
+          "name": "Crear laboratorio (guarda lab_id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('lab_id', pm.response.json().id); console.log('lab_id =', pm.response.json().id); }",
+                  "if (pm.response.code === 201) { pm.environment.set('lab_id', pm.response.json().id); console.log('lab_id =', pm.response.json().id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"country_code\": \"CO\",\n  \"code\": \"LAB{{$timestamp}}\",\n  \"name\": \"Laboratorio Test\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/laboratories"
+          }
+        },
+        {
+          "name": "Listar laboratorios (por país)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/laboratories?country=CO",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "laboratories"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "CO"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar tipos de equipo",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/equipment-types"
+          }
+        },
+        {
+          "name": "Crear tipo de equipo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Data\",\n  \"model\": \"Modelo-{{$timestamp}}\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/equipment-types"
+          }
+        },
+        {
+          "name": "Listar tamaños de etiqueta",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/label-sizes"
+          }
+        },
+        {
+          "name": "Listar formatos de serial",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/serial-formats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Equipos (núcleo)",
+      "item": [
+        {
+          "name": "Generar serial (guarda tag_id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('201 creado', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('tag_id', j.id);",
+                  "pm.environment.set('tag_id', j.id);",
+                  "pm.collectionVariables.set('serial_code', j.serial_code);",
+                  "pm.environment.set('serial_code', j.serial_code);",
+                  "console.log('Serial:', j.serial_code);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"country_code\": \"CO\",\n  \"laboratory_id\": {{lab_id}},\n  \"reason\": \"sin serial\",\n  \"notes\": \"Ingreso bodega norte\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/equipment-tags"
+          }
+        },
+        {
+          "name": "Listar / buscar equipos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/equipment-tags?status=active&page=1&size=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "equipment-tags"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detalle por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/equipment-tags/{{tag_id}}"
+          }
+        },
+        {
+          "name": "Detalle por serial (escaneo)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/equipment-tags/by-serial/{{serial_code}}"
+          }
+        },
+        {
+          "name": "Editar equipo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Observacion actualizada\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/equipment-tags/{{tag_id}}"
+          }
+        },
+        {
+          "name": "Registrar ingreso (inbound)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Ingreso a bodega\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/equipment-tags/{{tag_id}}/inbound"
+          }
+        },
+        {
+          "name": "Descartar equipo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"dañado\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/equipment-tags/{{tag_id}}/discard"
+          }
+        },
+        {
+          "name": "Historial del equipo",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/equipment-tags/{{tag_id}}/history"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Impresión",
+      "item": [
+        {
+          "name": "Vista previa (ZPL + PNG)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipment_id\": \"{{tag_id}}\",\n  \"label_size_id\": {{label_size_id}}\n}"
+            },
+            "url": "{{base_url}}/api/v1/labels/preview"
+          }
+        },
+        {
+          "name": "Imprimir etiqueta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipment_id\": \"{{tag_id}}\",\n  \"label_size_id\": {{label_size_id}},\n  \"copies\": 1,\n  \"darkness\": 15\n}"
+            },
+            "url": "{{base_url}}/api/v1/labels/print"
+          }
+        },
+        {
+          "name": "Reimprimir",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipment_id\": \"{{tag_id}}\",\n  \"label_size_id\": {{label_size_id}},\n  \"copies\": 1\n}"
+            },
+            "url": "{{base_url}}/api/v1/equipment-tags/{{tag_id}}/reprint"
+          }
+        },
+        {
+          "name": "Historial de impresiones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/print-jobs?equipment_id={{tag_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "print-jobs"
+              ],
+              "query": [
+                {
+                  "key": "equipment_id",
+                  "value": "{{tag_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sincronización offline",
+      "item": [
+        {
+          "name": "Push (operaciones offline)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"tablet-bodega-01\",\n  \"operations\": [\n    {\n      \"client_op_id\": \"op-{{$guid}}\",\n      \"type\": \"create\",\n      \"payload\": { \"country_code\": \"CO\", \"laboratory_id\": {{lab_id}} }\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/api/v1/sync/push"
+          }
+        },
+        {
+          "name": "Pull (delta)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/sync/pull"
+          }
+        },
+        {
+          "name": "Estado de sincronización",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/sync/status?device_id=tablet-bodega-01",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sync",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "device_id",
+                  "value": "tablet-bodega-01"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auditoría y Meta",
+      "item": [
+        {
+          "name": "Bitácora de auditoría (admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/audit-logs"
+          }
+        },
+        {
+          "name": "Configuración pública /meta/config",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/meta/config"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Aserción global: el backend nunca debe responder con error de servidor (5xx).",
+          "pm.test('Sin error de servidor (status < 500)', function () {",
+          "  pm.expect(pm.response.code).to.be.below(500);",
+          "});"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: serial_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: serial_manager
+      MYSQL_USER: serial
+      MYSQL_PASSWORD: serial
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pserial"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    container_name: serial_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://serial:serial@db:3306/serial_manager
+      APP_ENV: development
+      JWT_SECRET: dev-secret-change-me-please-32bytes-min
+      AUTH_PROVIDER: local
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin123
+      # Hot-reload fiable sobre bind-mounts de Windows (file watching por polling).
+      WATCHFILES_FORCE_POLLING: "true"
+    ports:
+      - "8080:8080"
+    # Montamos el código de Windows DENTRO del contenedor: cualquier cambio en
+    # ./app se refleja al instante gracias a uvicorn --reload.
+    volumes:
+      - ./app:/app/app
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
+    # Sobrescribimos el entrypoint de producción (gunicorn) por modo desarrollo:
+    # migraciones -> seeds -> servidor con recarga en caliente.
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        echo "Esperando a MySQL..." &&
+        until python -c "import pymysql,os,urllib.parse as u; d=u.urlparse(os.environ['DATABASE_URL'].replace('mysql+pymysql','mysql')); pymysql.connect(host=d.hostname,port=d.port or 3306,user=d.username,password=d.password,database=d.path.lstrip('/'))" 2>/dev/null; do sleep 2; done &&
+        echo "MySQL listo." &&
+        python -m alembic upgrade head &&
+        python -m app.seeds.run &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload --reload-dir /app/app
+
+volumes:
+  mysql_data:

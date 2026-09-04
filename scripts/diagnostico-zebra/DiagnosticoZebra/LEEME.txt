@@ -1,0 +1,89 @@
+===========================================================
+  DIAGNOSTICO DE IMPRESORA ZEBRA GK420t
+  Que hacer si la etiqueta "no imprime"
+===========================================================
+
+Esto NO daña nada ni cambia la configuracion del computador.
+Solo revisa la impresora y le manda etiquetas de prueba.
+
+Lo importante: el programa GUARDA SOLO un informe en tu Escritorio.
+Ese archivo es lo que hay que mandar por correo. No hay que
+entenderlo ni leerlo: solo adjuntarlo.
+
+
+PASO 1 - Abrir el programa
+--------------------------
+Haz doble clic en:   DiagnosticoZebra.exe
+
+Si Windows muestra un aviso azul que dice "Windows protegio su PC":
+  1. Haz clic en "Mas informacion"
+  2. Haz clic en "Ejecutar de todas formas"
+Es normal: pasa con cualquier programa nuevo que no viene de la tienda.
+
+Apenas abre, el programa ya revisa el computador solo y crea el
+informe en tu Escritorio. Se llama:
+
+    informe-impresora-<nombre del equipo>-<fecha>.txt
+
+Aunque cierres el programa aqui mismo, ese archivo ya sirve.
+
+
+PASO 2 - Opcion 1: Revisar todo
+-------------------------------
+Escribe el numero 1 y presiona Enter.
+
+El programa te muestra lo que encontro y marca en ROJO lo que
+esta mal. Lee la parte que dice "RESUMEN".
+
+
+PASO 3 - Opcion 2: ¿La impresora entiende ZPL?
+----------------------------------------------
+Escribe el numero 2 y presiona Enter.
+
+Van a salir una o dos etiquetas de la impresora. MIRALAS y despues
+el programa te va a preguntar que paso. Responde con el numero que
+corresponda: eso queda escrito en el informe y es MUY importante,
+porque es lo unico que el programa no puede ver por si solo.
+
+  * Si sale una etiqueta larga que dice "ZPL II"
+        -> La impresora esta bien. Manda el informe (PASO 5).
+
+  * Si NO sale esa, o sale otra distinta
+        -> La impresora esta en el modo equivocado. Ve al PASO 4.
+
+  * Si no sale NINGUNA etiqueta
+        -> No le llega nada. Revisa que este encendida, el cable USB,
+           y que no tenga luz roja.
+
+  * Si salen etiquetas EN BLANCO
+        -> Falta el RIBBON (la cinta negra). La GK420t no puede
+           imprimir sin ella.
+
+
+PASO 4 - Opcion 3: Ponerla en modo ZPL
+--------------------------------------
+Escribe el numero 3 y presiona Enter. Espera unos segundos.
+
+Despues escribe el numero 4 y presiona Enter para imprimir una
+etiqueta de prueba. Otra vez te va a preguntar que salio: responde.
+
+  * Si sale una etiqueta que dice "PRUEBA ZPL" con un codigo de barras
+        -> ¡Listo! La impresora quedo arreglada.
+           Vuelve a intentar imprimir desde el programa de seriales.
+
+
+PASO 5 - Mandar el informe  (ESTE PASO ES EL QUE IMPORTA)
+---------------------------------------------------------
+Escribe el numero 0 y presiona Enter para salir.
+
+El programa te muestra en pantalla el nombre exacto del archivo que
+dejo en tu Escritorio. Busca ese archivo, adjuntalo a un correo y
+mandalo al equipo de desarrollo.
+
+Si te perdiste, la opcion 6 te vuelve a mostrar donde quedo.
+
+
+-----------------------------------------------------------
+Resumen: abrir, opcion 1, opcion 2, responder lo que viste,
+y mandar por correo el archivo del Escritorio.
+-----------------------------------------------------------
