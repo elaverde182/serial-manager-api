@@ -11,7 +11,7 @@
 | Documento | Contenido |
 |-----------|-----------|
 | **README.md** (este archivo) | Visión general, stack, instalación y despliegue |
-| [`README_ADICIONAL.md`](README_ADICIONAL.md) | **⭐ Herramientas auxiliares**: explicación de JSON, script verify.ps1, newman |
+| [`DESPLIEGUE_MANUAL.md`](DESPLIEGUE_MANUAL.md) | **⭐ Despliegue sin Docker**: instalación manual en servidor Linux |
 | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Arquitectura por capas, módulos, diagrama de componentes |
 | [`docs/BASE_DE_DATOS.md`](docs/BASE_DE_DATOS.md) | Modelo de datos completo, DDL MySQL, índices, migraciones |
 | [`docs/API_ENDPOINTS.md`](docs/API_ENDPOINTS.md) | Catálogo completo de endpoints REST con request/response |
