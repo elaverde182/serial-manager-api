@@ -12,15 +12,11 @@
 |-----------|-----------|
 | **README.md** (este archivo) | Visión general, stack, instalación y despliegue |
 | [`README_ADICIONAL.md`](README_ADICIONAL.md) | **⭐ Herramientas auxiliares**: explicación de JSON, script verify.ps1, newman |
-| [`DESPLIEGUE_MANUAL.md`](DESPLIEGUE_MANUAL.md) | **⭐ Despliegue sin Docker**: instalación manual en servidor Linux |
 | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Arquitectura por capas, módulos, diagrama de componentes |
 | [`docs/BASE_DE_DATOS.md`](docs/BASE_DE_DATOS.md) | Modelo de datos completo, DDL MySQL, índices, migraciones |
 | [`docs/API_ENDPOINTS.md`](docs/API_ENDPOINTS.md) | Catálogo completo de endpoints REST con request/response |
 | [`docs/INTERFAZ_MODULOS.md`](docs/INTERFAZ_MODULOS.md) | Módulos/pantallas que debe tener la interfaz para usar el backend al 100% |
-| [`docs/AUTENTICACION_CONECTABLE.md`](docs/AUTENTICACION_CONECTABLE.md) | **⭐ Sistema de usuarios conectable a sistemas externos** |
 | [`docs/FRONTEND_ARQUITECTURA.md`](docs/FRONTEND_ARQUITECTURA.md) | Arquitectura del frontend Vue 3 + PWA + Tauri (web e instalable) |
-| [`docs/PLAN_EJECUCION.md`](docs/PLAN_EJECUCION.md) | Plan de ejecución por fases, hitos, checklist de entrega |
-| [`docs/PLAN_TAREAS_BACKEND.md`](docs/PLAN_TAREAS_BACKEND.md) | Plan de tareas accionable (checklist) + Docker + despliegue CapRover |
 | [`docs/DESPLIEGUE_CAPROVER.md`](docs/DESPLIEGUE_CAPROVER.md) | Despliegue en producción con CapRover |
 
 ---
@@ -323,8 +319,6 @@ etiquetas/
 │   ├── API_ENDPOINTS.md
 │   ├── AUTENTICACION_CONECTABLE.md
 │   ├── FRONTEND_ARQUITECTURA.md
-│   ├── PLAN_EJECUCION.md
-│   ├── PLAN_TAREAS_BACKEND.md
 │   └── DESPLIEGUE_CAPROVER.md
 ├── requerimientos/                # Insumos del cliente (cotización + Excel)
 ├── postman/                       # Colección de pruebas Postman
